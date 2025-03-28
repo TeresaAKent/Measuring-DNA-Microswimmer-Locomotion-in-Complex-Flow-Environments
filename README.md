@@ -74,6 +74,6 @@ Sarah Bergbreiter - Guided the research
 Rebecca Taylor - Guided the research
 
 ## Want to Contribute
-Please check the data folder which contains all the files (except videos) used for this paper and make sure your changes do not affect the running of any of those files (the number of non-magnetic fiducials, magnetic fiducials and swimmers varies by test and could be zero). Then feel free to commit to a branch with notes or email TeresaAKent@gmail.com to have your contribution pushed to main.
+Please check the data folder which contains all the files (except videos) used for this paper and make sure your changes do not affect the running of any of the three trials in the figure generation folder (the number of non-magnetic fiducials, magnetic fiducials and swimmers varies by test and could be zero). Then feel free to commit to a branch with notes or email TeresaAKent@gmail.com to have your contribution pushed to main.
 
 
