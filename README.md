@@ -10,11 +10,14 @@ Paper URL: https://arxiv-org.cmu.idm.oclc.org/abs/2412.15152
 
 Please contact Taryn Imamura at tri@andrew.cmu.edu for questions about the paper or the original copies of the videos.
 
-# Code Instruction
+# Code Installation
 Clone this repository:
-[git clone https://github.com/TeresaAKent/Measuring-DNA-Microswimmer-Locomotion-in-Complex-Flow-Environments.git](https://github.com/TeresaAKent/Measuring-DNA-Microswimmer-Locomotion-in-Complex-Flow-Environments.git)
+```
+git clone https://github.com/TeresaAKent/Measuring-DNA-Microswimmer-Locomotion-in-Complex-Flow-Environments.git
+```
 
 
+# Code Available
 ## Generating the Figures from the Paper
 In the GeneratingThePaperFigures Folder, you will find the tracking data output from the TEMA tracking system for the microswimmer, magnetic fiducial, and non-magnetic fiducial, as well as data for the microswimmer's orientation and the magnetic field's direction. Running the code will reproduce the figures in the paper and some others.
 
