@@ -531,48 +531,12 @@ def PlotSwimmerEvaluation(OscillatingFieldStart,FieldData, IntraAnal, convert, n
     plt.tight_layout()
     plt.show()
             
-def MakeStabilizeVideo(videoPath,MovVideoOutputName,divisor, FinalData, FinalDataMag, FinalDataM, IntraAnal, XStabilization, YStabilization,n, Mn, Sn, OverlayCircle):
-    # Create a video capture object to read videos
-    cap = cv2.VideoCapture(videoPath)
-    TotalFrames=int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    framesPerSecond=cap.get(cv2.CAP_PROP_FPS)
-    #framerate=1/framesPerSecond
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    
-    # This just copies the video
-    success, frame = cap.read()
-    OutputIMG=frame
-    
-    if not success:
-      print('Failed to read video')
-      sys.exit(1)
-    # This portion of the code captures the origional video
-    FramesToVideo = np.zeros((np.size(OutputIMG,0),np.size(OutputIMG,1),np.size(OutputIMG,2),int(TotalFrames/divisor+1)),int)
-    count = 0
-    hold=0
-    while cap.isOpened():
-      success, frame = cap.read()
-      count += divisor # i.e. at 30 fps, this advances one second
-      cap.set(cv2.CAP_PROP_POS_FRAMES, count)
-      if not success:
-        break
-      
-      FramesToVideo[:,:,:,hold]=frame
-      if hold%50==0:
-          print('PercentBar',np.round((hold/TotalFrames*divisor/2)*100))
-    
-     
-      # quit on ESC button
-      if cv2.waitKey(1) & 0xFF == 27:  # Esc pressed
-        break
-      hold=hold+1
-    
-    # This portion of the code creates the new video    
-    
-    # This creates the New video
+def MakeStabilizeVideo(videoPath,MovVideoOutputName,divisor, FinalData, FinalDataMag, FinalDataM, IntraAnal, XStabilization, YStabilization,n, Mn, Sn, OverlayCircle, HeaderRows):
     # If you want to do this with the magnetic motion change it to M Net instead of FNet
     XNetX = XStabilization
     XNetY = YStabilization
+    # print(np.shape(XNetX))
+    # print(np.shape(XNetY))
     
     indxX = np.argmax(abs(XNetX[:,0]))
     indxY = np.argmax(abs(XNetY[:,0]))
@@ -588,35 +552,82 @@ def MakeStabilizeVideo(videoPath,MovVideoOutputName,divisor, FinalData, FinalDat
     else:
         StartY=abs(MaxMoveY)+10
     
-    video=cv2.VideoWriter(MovVideoOutputName,fourcc,framesPerSecond/divisor,(int(np.size(FramesToVideo,1)+abs(MaxMoveX)+35),int(abs(MaxMoveY)+35+np.size(FramesToVideo,0))))
+    # Create a video capture object to read videos
+    cap = cv2.VideoCapture(videoPath)
+    TotalFrames=int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    framesPerSecond=cap.get(cv2.CAP_PROP_FPS)
+    #framerate=1/framesPerSecond
+    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     
-    for j in range(int(np.size(XNetX,0)/divisor)):
-        BlankArray = np.zeros((int(np.size(FramesToVideo,0)+abs(MaxMoveY)+35),int(abs(MaxMoveX)+35+np.size(FramesToVideo,1)),3),int)
-        #print(np.shape(BlankArray))
-        ZeroAxis = int(StartY + XNetY[int(j*divisor),0])
-        OneAxis = int(StartX - XNetX[int(j*divisor),0])
-        if OverlayCircle == 0:
-            BlankArray[ZeroAxis:ZeroAxis+np.size(FramesToVideo,0),OneAxis:OneAxis+np.size(FramesToVideo,1)] = FramesToVideo[:,:,:,j]
-            video.write(np.uint8(BlankArray))
-        elif OverlayCircle == 1:
-            ArrowFrame = np.ascontiguousarray(FramesToVideo[:,:,:,j],dtype=np.uint8)
-            i=int((j-2)*divisor)
-            for k in range(n):
-               cv2.circle(ArrowFrame,(int(FinalData[i,1+2*k]),np.size(ArrowFrame,0)-(int(FinalData[i,2+2*k]))),15,(255,0,0),2)
-            for l in range(Mn):
-                cv2.circle(ArrowFrame,(int(FinalDataMag[0,1+l*2]+
-                                           IntraAnal['MotionMagX'][i,0]),np.size(ArrowFrame,0)-
-                                       (int(FinalDataMag[0,2+2*l]+IntraAnal['MotionMagY'][i,0]))),15,(0,0,255),2)
-            for c in range(Sn):
-                cv2.circle(ArrowFrame,(int(FinalDataM[0,1+2*c]+IntraAnal['MotionMagX'][i,0]),np.size(ArrowFrame,0)-
-                                       (int(FinalDataM[0,2+2*c]+IntraAnal['MotionMagY'][i,0]))),15,(255,0,255),2)
-        
-            BlankArray[ZeroAxis:ZeroAxis+np.size(FramesToVideo,0),OneAxis:OneAxis+np.size(FramesToVideo,1)] =ArrowFrame
-            video.write(np.uint8(BlankArray))
+    # This just copies the video
+    success, frame = cap.read()
+    OutputIMG=frame
+    
+    if not success:
+      print('Failed to read video')
+      sys.exit(1)
+    # This portion of the code captures the origional video
+    # FramesToVideo = np.zeros((np.size(OutputIMG,0),np.size(OutputIMG,1),np.size(OutputIMG,2),int(TotalFrames/divisor+1)),int)
+    count = 0
+    hold=0
+    
+     # This portion of the code creates the new video    
+    
+    # This creates the New video
+    video=cv2.VideoWriter(MovVideoOutputName,fourcc,framesPerSecond/divisor,(int(np.size(OutputIMG,1)+abs(MaxMoveX)+35),int(abs(MaxMoveY)+35+np.size(OutputIMG,0))))
+    
+    while cap.isOpened():
+      success, frame = cap.read()
+      if not success:
+        break
+      count += divisor # i.e. at 30 fps, this advances one second
+      if count > np.size(XNetX,0)-1:
+          # print('yes')
+          break
+      cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+      j=count
+      
+      
+      #FramesToVideo[:,:,:,hold]=frame
+      BlankArray = np.zeros((int(np.size(OutputIMG,0)+abs(MaxMoveY)+35),int(abs(MaxMoveX)+35+np.size(OutputIMG,1)),3),int)
+      ZeroAxis = int(StartY + XNetY[int(count),0])
+      OneAxis = int(StartX - XNetX[int(count),0])
+      if OverlayCircle == 0:
+          BlankArray[ZeroAxis:ZeroAxis+np.size(OutputIMG,0),OneAxis:OneAxis+np.size(OutputIMG,1)] = frame
+          video.write(np.uint8(BlankArray))
+      elif OverlayCircle == 1:
+          ArrowFrame = np.ascontiguousarray(frame,dtype=np.uint8)
+          
+          if count<HeaderRows:
+              i=0
+          else:
+              i=count-HeaderRows
+          for k in range(n):
+              cv2.circle(ArrowFrame,(int(FinalData[i,1+2*k]),np.size(ArrowFrame,0)-(int(FinalData[i,2+2*k]))),15,(255,0,0),2)
+          for l in range(Mn):
+            cv2.circle(ArrowFrame,(int(FinalDataMag[0,1+l*2]+
+                                       IntraAnal['MotionMagX'][i,0]),np.size(ArrowFrame,0)-
+                                   (int(FinalDataMag[0,2+2*l]+IntraAnal['MotionMagY'][i,0]))),15,(0,0,255),2)
+          for c in range(Sn):
+            cv2.circle(ArrowFrame,(int(FinalDataM[0,1+2*c]+IntraAnal['MotionMagX'][i,0]),np.size(ArrowFrame,0)-
+                                   (int(FinalDataM[0,2+2*c]+IntraAnal['MotionMagY'][i,0]))),15,(255,0,255),2)
+          BlankArray[ZeroAxis:ZeroAxis+np.size(OutputIMG,0),OneAxis:OneAxis+np.size(OutputIMG,1)] =ArrowFrame
+          video.write(np.uint8(BlankArray))
+          # print(count)
             
-        
-        if j%50==0:
-          print('PercentBar2',np.round((0.5+j/TotalFrames*divisor/2)*100))
+              
+      if hold%50==0:
+          print('PercentBar',np.round((hold/min(TotalFrames,np.size(XNetX,0))*divisor/2)*100))
+    
+     
+      # quit on ESC button
+      if cv2.waitKey(1) & 0xFF == 27:  # Esc pressed
+        break
+      hold=hold+1
+    
+   
+    
+
     
         
           
