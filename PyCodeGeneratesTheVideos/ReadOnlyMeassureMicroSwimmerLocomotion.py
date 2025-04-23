@@ -365,7 +365,7 @@ def LookAtPercentErrorNonMagFid(n,color,PercentageVelocityError,convert, time, E
     plt.xlabel('Time [s]')
     plt.ylabel('Percent Error [%]')
     plt.ylim(0,100)
-    
+    plt.show()
     # Visualization of the distnce between the swimmers and the fiducials overtime
     plt.rcParams.update({'font.size': 10})
     numColumns=3
@@ -403,6 +403,7 @@ def LookAtPercentErrorNonMagFid(n,color,PercentageVelocityError,convert, time, E
     fig.text(0.00, 0.5, "Error from Estimate [%]", va='center', rotation='vertical')
     fig.text(1.0, 0.5, '$Distance from Swimmer$ [$\mu$m]', va='center', rotation='vertical')
     plt.tight_layout()
+    plt.show()
     pass
 
 def PlotSummaryMotionWithShading(FieldData,SwimmerOrientation,IntraAnal,OscillatingFieldStart,NetResults,convert, n, Mn, SafeFiducials):
@@ -447,13 +448,13 @@ def PlotSummaryMotionWithShading(FieldData,SwimmerOrientation,IntraAnal,Oscillat
     colorG=np.ones((2,3))*[0,1,0]
     colorG[1,:]=colorG[1,:]*.5
     #Mags = np.sqrt(IntraAnal['MotionMagY']**2+IntraAnal['MotionMagX']**2)
-    Regs2 = np.sqrt(NetResults['MNetX'][:,0]**2+NetResults['MNetY'][:,0]**2)
+    Regs3 = np.sqrt(NetResults['MNetX'][:,0]**2+NetResults['MNetY'][:,0]**2)-Regs2
     
-    axes[3].plot(time,Regs2/convert,color = [0.94,0.03,0.03], linewidth=0.5)
+    axes[3].plot(time,Regs3/convert,color = [0.94,0.03,0.03], linewidth=0.5)
     if Mn>1:
         Reg2Std = np.std(np.sqrt(IntraAnal['MotionMagY'][:,SafeFiducials['GoodMagFiducials']]**2+
                              IntraAnal['MotionMagX'][:,SafeFiducials['GoodMagFiducials']]**2),1)
-        axes[3].fill_between(time.astype(float), (Regs2.flatten()-Reg2Std.flatten())/convert, (Regs2.flatten()+Reg2Std.flatten())/convert, color = 'r', alpha =.25)
+        axes[3].fill_between(time.astype(float), (Regs3.flatten()-Reg2Std.flatten())/convert, (Regs3.flatten()+Reg2Std.flatten())/convert, color = 'r', alpha =.25)
     else:
         pass
     axes[3].set_xlabel('Time [s]')
@@ -472,6 +473,7 @@ def PlotSummaryMotionWithShading(FieldData,SwimmerOrientation,IntraAnal,Oscillat
     axes[4].set_ylabel('$\Delta_{Swim}-\Delta_{Mag}$ [$\mu$m]',color = [.443,0,.467])
     axes[4].tick_params(axis="y", labelcolor=[.443,0,.467])
     plt.tight_layout()
+    plt.show()
 
 def PlotSwimmerEvaluation(OscillatingFieldStart,FieldData, IntraAnal, convert, n, Mn, NetResults, SafeFiducials):
     time = IntraAnal['time']
@@ -527,6 +529,7 @@ def PlotSwimmerEvaluation(OscillatingFieldStart,FieldData, IntraAnal, convert, n
     plt.xlabel("$\Delta$ x")
     plt.axis('equal')
     plt.tight_layout()
+    plt.show()
             
 def MakeStabilizeVideo(videoPath,MovVideoOutputName,divisor, FinalData, FinalDataMag, FinalDataM, IntraAnal, XStabilization, YStabilization,n, Mn, Sn, OverlayCircle):
     # Create a video capture object to read videos
