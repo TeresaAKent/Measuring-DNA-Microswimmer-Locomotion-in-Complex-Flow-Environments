@@ -27,17 +27,17 @@ OutputfileName = "Demonstration"
 HeaderRows = 15
 
 ## Load Fiducials 
-Locations = "TAEPull_MS10_Fiducials.xlsx"
+Locations = "TasrMS2_7HzSine_DULR_Fiducials.xlsx"
 FinalData = np.array(pd.read_excel(Locations))
 FinalData = FinalData[HeaderRows:,:]
 
 ##Load Swimmer Data
-Locations = "TAEPull_MS10_Position.xlsx"
+Locations = "TasrMS2_7HzSine_DULR_Position.xlsx"
 FinalDataM = np.array(pd.read_excel(Locations))
 FinalDataM = FinalDataM[HeaderRows:,:]
 
 ##Load Magnetic Fiducial Data
-Locations = "TAEPull_MS10_MagFiducials.xlsx"
+Locations = "TasrMS2_7HzSine_DULR_magFiducials.xlsx"
 FinalDataMag = np.array(pd.read_excel(Locations))
 FinalDataMag = FinalDataMag[HeaderRows:,:]
 
@@ -56,7 +56,7 @@ FieldData = FieldData[HeaderRows:,:]
 OscillatingFieldStart = 800
 
 # Load the video
-videoPath = "TAEPull_MS10_constDirRotSine_trim.mp4"
+videoPath = "TasrMS2_7HzSine_DULR.mp4"
 
 
 #-----------------------------------------------------------------
@@ -137,6 +137,7 @@ PlotSwimmerEvaluation(OscillatingFieldStart,FieldData, IntraAnal, convert, n, Mn
 ## The Videos
 #Create the Output Name
 MovVideoOutputName = "{}MovingFrame.mp4".format(OutputfileName)
+BubbleVideoOutputName = "{}BubbleTrail2.mp4".format(OutputfileName)
 
 # The stabilization decides what drives how the frame moves
 # MNet Stabilizes to the Magnetic Fiducial
@@ -145,4 +146,5 @@ MovVideoOutputName = "{}MovingFrame.mp4".format(OutputfileName)
 XStabilization = NetResults['MNetX']
 YStabilization = NetResults['MNetY']
 
-MakeStabilizeVideo(videoPath,MovVideoOutputName,skipFrames, FinalData, FinalDataMag, FinalDataM, IntraAnal, XStabilization, YStabilization,n, Mn, Sn, OverlayCircle)
+#MakeStabilizeVideo(videoPath,MovVideoOutputName,skipFrames, FinalData, FinalDataMag, FinalDataM, IntraAnal, XStabilization, YStabilization,n, Mn, Sn, OverlayCircle, HeaderRows)
+MakeBubblesVideo(videoPath,BubbleVideoOutputName,skipFrames, FinalData, FinalDataMag, FinalDataM, IntraAnal, XStabilization, YStabilization,n, Mn, Sn, OverlayCircle, HeaderRows)
